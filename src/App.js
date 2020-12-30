@@ -1,9 +1,9 @@
 import { useState, useEffect} from 'react'
 import Web3 from 'web3'
-//import abiJson from './contract/abi.json';
+import abiJson from './abi';
 
 const MOONBASE_ALPHA = 'https://rpc.testnet.moonbeam.network'
-const CONTRACT_ADDRESS = "0xDbEa7f3DcF08baC862c31D31B49C1Ed189672EDF";
+const CONTRACT_ADDRESS = "0x940cc8AdBe79404Ee50220B42437e62127b024Dc";
 var contractInstance;
 
 const web3 = new Web3(Web3.givenProvider || "http://localhost:9933")
@@ -51,7 +51,7 @@ function App() {
     }
     console.log("Balance in ETH", balance)
     if(!contractInstance){
-      contractInstance = new web3.eth.Contract(abi, CONTRACT_ADDRESS, {from: accounts[0]});
+      contractInstance = new web3.eth.Contract(abiJson.abi, CONTRACT_ADDRESS, {from: accounts[0]});
       console.log("new contractInstance", contractInstance)
     }
     else console.log("existing contractInstance", contractInstance)
