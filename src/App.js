@@ -64,7 +64,6 @@ function App() {
               console.log("statistics", res);
           });
   }
-  
 
   useEffect(() => {
     loadBlockchainData()

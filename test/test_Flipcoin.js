@@ -1,7 +1,27 @@
 // Example test script - Uses Mocha and Ganache
-const Token = artifacts.require("MyToken");
+const Token = artifacts.require("Flipcoin");
+const truffleAssert = require("truffle-assertions");
 
-contract('MyToken', accounts => {
+contract('Flipcoin', accounts => {
+
+    let instance;
+  let ownerAcc = accounts[0];
+  let userAcc =  accounts[3];
+  let payment = web3.utils.toWei("1", "ether");
+
+  before(async function(){
+    instance = await Flipcoin.deployed()
+  });
+
+  it("should validate increase in contact balance", async function(){
+    await instance.depositFunds({from: ownerAcc, value: payment});
+    let contractBalance = await web3.eth.getContractBalance(instance.address);
+    let variableBalance = await instance.balance();
+    assert(contractBalance == variableBalance, "Problem with contract balance" + contractBalance + " " + variableBalance);
+    assert(variableBalance == payment, "Problem with contract balance value" + variableBalance + " " + payment);
+  });
+
+    /*
     let token;
     const _totalSupply = "8000000000000000000000000";
     beforeEach(async () => {
@@ -46,4 +66,5 @@ contract('MyToken', accounts => {
         const balance2 = await token.balanceOf.call(accounts[2]);
         assert.equal(balance2, amountTransfer, 'accounts[2] balance is wrong');
     })
+    */
 });
