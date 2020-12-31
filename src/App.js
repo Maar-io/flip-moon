@@ -65,12 +65,23 @@ function App() {
               console.log("statistics", res);
           });
   }
+
   async function getContractBalance() {
       console.log("get Contract Balance");
       contractInstance.methods.getContractBalance().call()
       .then((res) => {
               console.log("getContractBalance", res);
           });
+  }
+
+  async function flipCoin() {
+      console.log("flipCoin");
+      var weiValue = web3.utils.toWei('10','milli');
+      contractInstance.methods.flipCoin(true).send({gas: 3000000, value: weiValue})
+      .then((res) => {
+              console.log("flipCoin", res);
+          });
+      eventListener();
   }
 
   async function deposit() {
@@ -88,10 +99,45 @@ function App() {
   
   async function withdrawAll() {
       console.log("withdrawAll");
-      contractInstance.methods.withdrawAll().call()
-      .then((res) => {
-              console.log("withdrawAll", res);
-          });
+      var transferedBalance = contractInstance.methods.withdrawAll().call()
+      .on('receipt', (rec) => {
+        console.log("transferedBalance", transferedBalance);
+        console.log("withdrawAll receipt", rec);
+      })
+      .on('error', (err) => {
+        console.log("withdrawAll err", err);
+      });
+  }
+
+  function eventListener(){
+    console.log("set event listeners");
+    contractInstance.events.playerRegistered(function(error, result) {
+        console.log("Event playerRegistered");
+        if (!error){
+            console.log("Player " + result["returnValues"][0] + " is registered with contract");
+        }
+        else{
+            console.log("error in playerRegistered");
+            console.log(error);
+        }
+    });
+
+    contractInstance.events.coinFlipResult(function(error, result) {
+        console.log("Event coinFlipResult");
+        if (!error){
+            console.log("flip result", result);
+            if (result["returnValues"][2] > 0){
+                console.log("You won!!!!!");
+            }
+            else {
+                console.log("You lost :(");
+            }
+        }
+        else{
+            console.log("error in coinFlipResult");
+            console.log(error);
+        }
+    });
   }
 
   useEffect(() => {
@@ -112,6 +158,8 @@ function App() {
       <button onClick={getPlayerData} >getPlayerData</button>
       <button onClick={deposit} >Deposit</button>
       <button onClick={withdrawAll} >withdrawAll</button>
+      <button onClick={flipCoin} >Head</button>
+      <button onClick={flipCoin} >Tail</button>
       </>
     )
   }
