@@ -4,6 +4,7 @@ import abiJson from './abi';
 
 const MOONBASE_ALPHA = 'https://rpc.testnet.moonbeam.network'
 const CONTRACT_ADDRESS = "0x940cc8AdBe79404Ee50220B42437e62127b024Dc";
+const OWNER = "0x8F10433FC11b70a15128aAF0b30B906627808296"
 var contractInstance;
 
 const web3 = new Web3(Web3.givenProvider || "http://localhost:9933")
@@ -57,11 +58,39 @@ function App() {
     else console.log("existing contractInstance", contractInstance)
   }
 
-  async function getContractBalance() {
+  async function getPlayerData() {
       console.log("Refresh statistics");
       contractInstance.methods.getPlayerData().call()
       .then((res) => {
               console.log("statistics", res);
+          });
+  }
+  async function getContractBalance() {
+      console.log("get Contract Balance");
+      contractInstance.methods.getContractBalance().call()
+      .then((res) => {
+              console.log("getContractBalance", res);
+          });
+  }
+
+  async function deposit() {
+      console.log("deposit");
+      var weiValue = web3.utils.toWei('100','milli');
+      contractInstance.methods.depositFunds().send({OWNER, gas: 3000000, value: weiValue})
+      .on('receipt', function(rec){
+
+        console.log("deposit receipt", rec);
+      })
+      .on('error', function(err){
+        console.log("deposit err", err);
+      });
+  }
+  
+  async function withdrawAll() {
+      console.log("withdrawAll");
+      contractInstance.methods.withdrawAll().call()
+      .then((res) => {
+              console.log("withdrawAll", res);
           });
   }
 
@@ -80,6 +109,9 @@ function App() {
       <h4> Connected account: {account}</h4>
       <h4> Balance in ETH: {balance}</h4>
       <button onClick={getContractBalance} >ContractBalance</button>
+      <button onClick={getPlayerData} >getPlayerData</button>
+      <button onClick={deposit} >Deposit</button>
+      <button onClick={withdrawAll} >withdrawAll</button>
       </>
     )
   }
