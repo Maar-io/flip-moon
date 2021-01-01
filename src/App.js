@@ -7,6 +7,9 @@ import ConnectedAccount from './components/ConnectedAccount'
 
 const MOONBASE_ALPHA = 'https://rpc.testnet.moonbeam.network'
 const OWNER = "0x8F10433FC11b70a15128aAF0b30B906627808296"
+const RESULT_UNKNOWN = 'result ❔'
+const RESULT_WON = 'You won 👍'
+const RESULT_LOST = 'You lost 👎'
 var contractInstance;
 
 const web3 = new Web3(Web3.givenProvider || "http://localhost:9933")
@@ -17,7 +20,7 @@ function App() {
   const [account, setAccount] = useState('')
   const [accountBalance, setAccountBalance] = useState(0)
   const [contractBalance, setContractBalance] = useState(0)
-  const [betResult, setBetResult] = useState('result?')
+  const [betResult, setBetResult] = useState(RESULT_UNKNOWN)
   const [connected, setConnected] = useState(false)
   const [statistics, setStatistics] = useState({})
 
@@ -58,6 +61,9 @@ function App() {
     else console.log("existing contractInstance", contractInstance)
     eventListener()
     getContractBalance()
+    getPlayerData()
+    setBetResult(RESULT_UNKNOWN)
+
   }
 
   async function getPlayerData() {
@@ -74,13 +80,13 @@ function App() {
     contractInstance.methods.getContractBalance().call()
       .then((res) => {
         console.log("getContractBalance", res)
-        setContractBalance(res)
+        setContractBalance(web3.utils.fromWei(res, 'ether'))
       });
   }
 
   async function flipCoin(betHead) {
     console.log("flipCoin", account, betHead);
-    setBetResult('waiting blockchain result...')
+    setBetResult('waiting blockchain result... 🐌')
     var weiValue = web3.utils.toWei('10', 'milli');
     contractInstance.methods.flipCoin(betHead).send({ from: account, gas: 3000000, value: weiValue })
       .then((res) => {
@@ -131,11 +137,11 @@ function App() {
       if (!error) {
         console.log("flip result", result);
         if (result["returnValues"][2] > 0) {
-          setBetResult("You won!!!!!")
+          setBetResult(RESULT_WON)
           console.log("You won!!!!!");
         }
         else {
-          setBetResult("You lost :(")
+          setBetResult(RESULT_LOST)
           console.log("You lost :(");
         }
         getPlayerData()
@@ -208,8 +214,7 @@ function App() {
             <Button onClick={deposit} >Deposit</Button>
             <Button onClick={withdrawAll} >withdrawAll</Button>
           </Row>
-        )
-          : null}
+        ) : null}
 
 
 
