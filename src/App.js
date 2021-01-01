@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import Web3 from 'web3'
 import abiJson from './abi';
-import { Button, Container, Row } from 'react-bootstrap';
+import { Button, Container, Row, Card } from 'react-bootstrap';
 import Balance from './components/Balance'
 import ConnectedAccount from './components/ConnectedAccount'
 
@@ -17,8 +17,9 @@ function App() {
   const [account, setAccount] = useState('')
   const [accountBalance, setAccountBalance] = useState(0)
   const [contractBalance, setContractBalance] = useState(0)
-
+  const [betResult, setBetResult] = useState('result?')
   const [connected, setConnected] = useState(false)
+  const [statistics, setStatistics] = useState({})
 
   async function loadWeb3() {
     if (window.ethereum) {
@@ -64,6 +65,7 @@ function App() {
     contractInstance.methods.getPlayerData().call()
       .then((res) => {
         console.log("statistics", res);
+        setStatistics(res)
       });
   }
 
@@ -78,6 +80,7 @@ function App() {
 
   async function flipCoin(betHead) {
     console.log("flipCoin", account, betHead);
+    setBetResult('waiting blockchain result...')
     var weiValue = web3.utils.toWei('10', 'milli');
     contractInstance.methods.flipCoin(betHead).send({ from: account, gas: 3000000, value: weiValue })
       .then((res) => {
@@ -128,13 +131,17 @@ function App() {
       if (!error) {
         console.log("flip result", result);
         if (result["returnValues"][2] > 0) {
+          setBetResult("You won!!!!!")
           console.log("You won!!!!!");
         }
         else {
+          setBetResult("You lost :(")
           console.log("You lost :(");
         }
+        getPlayerData()
       }
       else {
+        setBetResult("error in coinFlipResult")
         console.log("error in coinFlipResult");
         console.log(error);
       }
@@ -149,7 +156,7 @@ function App() {
     return (
       <Container fluid='true'>
         <Row>
-          <Button  onClick={loadWeb3} >Connect to Moon-flip</Button>
+          <Button onClick={loadWeb3} >Connect to Moon-flip</Button>
         </Row>
       </Container>
 
@@ -157,16 +164,57 @@ function App() {
   }
   else {
     return (
-      <>
-        <ConnectedAccount account={account} />
-        <Balance contractBal={contractBalance} accountBal={accountBalance} />
+      <Container fluid='md'>
+        <Row>
+          <ConnectedAccount account={account} />
+        </Row>
+        <Row>
+          <Balance contractBal={contractBalance} accountBal={accountBalance} />
+        </Row>
+        <Row>
+          <Card border="info" style={{ width: '18rem', margin: 5 }}>
+            <Card.Body>
+              <Card.Title> 1. Pick your bet amount </Card.Title>
+              <Card.Text>  bla </Card.Text>
+            </Card.Body>
+          </Card>
+          <Card border="info" style={{ width: '18rem', margin: 5 }}>
+            <Card.Body>
+              <Card.Title> 2. Press button to place your bet </Card.Title>
+              <Card.Text>
+                <Button onClick={() => flipCoin(true)}>Head</Button>
+                <Button onClick={() => flipCoin(false)}>Tail</Button>
+              </Card.Text>
+              <Card.Footer>
+                <h5>{betResult}</h5>
+              </Card.Footer>
+            </Card.Body>
+          </Card>
+          <Card border="info" style={{ width: '18rem', margin: 5 }}>
+            <Card.Body>
+              <Card.Title> 3. Account statistics</Card.Title>
+              <Card.Text>Plays:{statistics.plays} </Card.Text>
+              <Card.Text>Won:  {statistics.won} </Card.Text>
+              <Card.Text>Lost: {statistics.lost} </Card.Text>
+            </Card.Body>
+          </Card>
+        </Row>
+
+
         {/* <Button onClick={getContractBalance} >ContractBalance</Button> */}
-        <Button onClick={getPlayerData} >getPlayerData</Button>
-        <Button onClick={deposit} >Deposit</Button>
-        <Button onClick={withdrawAll} >withdrawAll</Button>
-        <Button onClick={() => flipCoin(true)}>Head</Button>
-        <Button onClick={() => flipCoin(false)}>Tail</Button>
-      </>
+        {/* <Button onClick={getPlayerData} >getPlayerData</Button> */}
+        {(account == OWNER) ? (
+          <Row>
+            <Button onClick={deposit} >Deposit</Button>
+            <Button onClick={withdrawAll} >withdrawAll</Button>
+          </Row>
+        )
+          : null}
+
+
+
+      </Container>
+
     )
   }
 }

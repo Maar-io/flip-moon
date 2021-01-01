@@ -3,7 +3,7 @@ import { Table } from 'react-bootstrap'
 
 export default function AccountBalance(props) {
   return (
-    <Table striped bordered hover>
+    <Table striped bordered >
       <thead>
         <tr>
           <th>Contract Balance</th>
