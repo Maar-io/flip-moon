@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.7.0;
 import "./Ownable.sol";
+
 contract Flipcoin is Ownable{
 
     struct Player {
@@ -12,13 +13,13 @@ contract Flipcoin is Ownable{
       uint downPayment;
     }
     uint public balance;
-    uint MIN_BET = 0.01 ether;
-    uint256 constant MAX_INT_FROM_BYTE = 256;
-    uint256 constant NUM_RANDOM_BYTES_REQUESTED = 1;
-    bytes m_proof;
+    uint nonce = 0;
     mapping (address => Player) private gambler;
-    address payable[] public creators; //TODO change to private
+    address payable[] public creators;
     
+    // CONSTANTS
+    uint constant MIN_BET = 0.01 ether;
+
     // EVENTS
     event playerRegistered(address adr);
     event coinFlipResult(string messageToPlayer, address creator, uint toTransfer);
@@ -28,50 +29,7 @@ contract Flipcoin is Ownable{
         require(msg.value >= msgFunds);
         _;
     }
-/*
-    //get random number through Oracle
-    function queryOracle() payable public returns (bytes32)
-    {
-        uint256 QUERY_EXECUTION_DELAY = 0;
-        uint256 GAS_FOR_CALLBACK = 200000;
-        bytes32  queryId = provable_newRandomDSQuery(
-            QUERY_EXECUTION_DELAY,
-            NUM_RANDOM_BYTES_REQUESTED,
-            GAS_FOR_CALLBACK
-        );
-        emit provableQuerySent("provable queried", msg.sender);
-        return queryId;
-    }
 
-    // oracle callback function for random number
-    function __callback(bytes32 _queryId, string memory _result, bytes memory _proof) public {
-        require(msg.sender == provable_cbAddress());
-        m_proof = _proof; //TODO not used
-        uint256 randomNumber = uint256(keccak256(abi.encodePacked(_result))) % 2;
-        updatePlayer(_queryId, randomNumber);
-    }
-
-    function updatePlayer(bytes32 queryId, uint256 randomNumber) private{
-        address payable creator;
-        for (uint i=0; i<creators.length; i++){
-            creator = creators[i];
-            if (gambler[creator].provableQuery == queryId){
-                gambler[creator].provableQuery = 0;
-                gambler[creator].provableQuery = 0;
-                break;
-            }
-        }
-        isWinner(creator, randomNumber);
-    }
-
-    // used only for testing purposes to bypass oracle
-    function testRandom() public returns (bytes32){
-        bytes32 queryId = bytes32(keccak256(abi.encodePacked(msg.sender)));
-        __callback(queryId, "1", bytes("test"));
-        emit provableQuerySent("test provable queried", msg.sender);
-        return queryId;
-    }
-*/
     // used to fill up the bet pool
     function depositFunds() public payable onlyOwner{
         balance += msg.value;
@@ -107,26 +65,24 @@ contract Flipcoin is Ownable{
         emit playerRegistered(creator);
     }
     
-
     // player placed a bet
     function flipCoin(bool betOnHead) public payable costs(MIN_BET){
         uint downPayment = msg.value;
 
         balance += downPayment;
         _isRegistered(msg.sender);
-        uint256 randomNumber = _pseudoRandom();
+        uint256 randomNumber = _pseudoRandom(msg.sender);
         gambler[msg.sender].plays++;
         gambler[msg.sender].downPayment = downPayment;
         gambler[msg.sender].betOnHead = betOnHead;
         _isWinner(msg.sender, randomNumber);
     }
 
-    function _pseudoRandom() private view returns (uint){
-        uint rdm = block.timestamp % 2;
-        if (rdm == 1){
-            return 1;
-        }
-        return 0;
+    // create pseudo random number 0 or 1
+    function _pseudoRandom(address sender) private returns (uint){
+         uint random = uint(keccak256(abi.encodePacked(block.timestamp, sender, nonce))) % 2;
+         nonce++;
+         return random;
     }
 
     // compare random with the player's bet

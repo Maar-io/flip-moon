@@ -3,7 +3,6 @@ import Web3 from 'web3'
 import abiJson from './abi';
 
 const MOONBASE_ALPHA = 'https://rpc.testnet.moonbeam.network'
-const CONTRACT_ADDRESS = "0x940cc8AdBe79404Ee50220B42437e62127b024Dc";
 const OWNER = "0x8F10433FC11b70a15128aAF0b30B906627808296"
 var contractInstance;
 
@@ -52,7 +51,7 @@ function App() {
     }
     console.log("Balance in ETH", balance)
     if(!contractInstance){
-      contractInstance = new web3.eth.Contract(abiJson.abi, CONTRACT_ADDRESS, {from: accounts[0]});
+      contractInstance = new web3.eth.Contract(abiJson.abi, abiJson.address, {from: accounts[0]});
       console.log("new contractInstance", contractInstance)
     }
     else console.log("existing contractInstance", contractInstance)
@@ -74,10 +73,10 @@ function App() {
           });
   }
 
-  async function flipCoin() {
-      console.log("flipCoin");
+  async function flipCoin(betHead) {
+      console.log("flipCoin", betHead);
       var weiValue = web3.utils.toWei('10','milli');
-      contractInstance.methods.flipCoin(true).send({gas: 3000000, value: weiValue})
+      contractInstance.methods.flipCoin(betHead).send({gas: 3000000, value: weiValue})
       .then((res) => {
               console.log("flipCoin", res);
           });
@@ -158,8 +157,8 @@ function App() {
       <button onClick={getPlayerData} >getPlayerData</button>
       <button onClick={deposit} >Deposit</button>
       <button onClick={withdrawAll} >withdrawAll</button>
-      <button onClick={flipCoin} >Head</button>
-      <button onClick={flipCoin} >Tail</button>
+      <button onClick={() => flipCoin(true)}>Head</button>
+      <button onClick={() => flipCoin(false)}>Tail</button>
       </>
     )
   }
