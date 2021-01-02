@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import Web3 from 'web3'
 import abiJson from './abi';
-import { Button, Container, Row, Card, ButtonToolbar, ButtonGroup, Form, Badge } from 'react-bootstrap';
+import { Button, Container, Row, Card, Col, Form, Badge } from 'react-bootstrap';
 import Balance from './components/Balance'
 import ConnectedAccount from './components/ConnectedAccount'
 
@@ -24,7 +24,6 @@ function App() {
     { name: "0.02 DEV", value: "20" },
     { name: "0.05 DEV", value: "50" },
     { name: "0.1 DEV", value: "100" },
-    { name: "0.5 DEV", value: "500" }
   ];
   const [account, setAccount] = useState('')
   const [accountBalance, setAccountBalance] = useState(0)
@@ -104,7 +103,7 @@ function App() {
   }
 
   async function deposit() {
-    console.log("deposit");
+    console.log("deposit", DEPOSIT_AMOUNT);
     var weiValue = web3.utils.toWei(DEPOSIT_AMOUNT, 'milli');
     contractInstance.methods.depositFunds().send({ OWNER, gas: 3000000, value: weiValue })
       .on('receipt', function (rec) {
@@ -167,12 +166,11 @@ function App() {
     loadBlockchainData()
   }, [connected, accountBalance])
 
-  console.log(betAmount)
   if (!connected) {
     return (
       <Container fluid='true'>
         <Row>
-          <Button onClick={loadWeb3} >Connect to Moon-flip</Button>
+          <Button onClick={loadWeb3} >Connect to Moonbase Alpha</Button>
         </Row>
       </Container>
 
@@ -181,8 +179,13 @@ function App() {
   else {
     return (
       <Container fluid='md'>
-        <Row>
-          <ConnectedAccount account={account} />
+        <Row >
+          <Col>
+          logo
+          </Col>
+          <Col>
+            <ConnectedAccount account={account} />
+          </Col>
         </Row>
         <Row>
           <Balance contractBal={contractBalance} accountBal={accountBalance} />
@@ -199,6 +202,7 @@ function App() {
                       type='radio'
                       id={radio.name}
                       value={radio.value}
+                      checked={betAmount===radio.value}
                       onChange={e => setBetAmount(e.currentTarget.value)} />
                   ))}
                 </div>
@@ -209,14 +213,8 @@ function App() {
             <Card.Body>
               <Card.Title> 2. Press button to place your bet </Card.Title>
               <Card.Text>
-                <ButtonToolbar aria-label="Toolbar with button groups">
-                  <ButtonGroup className="mr-2" aria-label="First group">
-                    <Button onClick={() => flipCoin(true)}>Head</Button>
-                  </ButtonGroup>
-                  <ButtonGroup className="mr-2" aria-label="Second group">
+                    <Button onClick={() => flipCoin(true)}>Head</Button>{' '}
                     <Button onClick={() => flipCoin(false)}>Tail</Button>
-                  </ButtonGroup>
-                </ButtonToolbar>
               </Card.Text>
               <Card.Footer>
                 <h5>{betResult}</h5>
