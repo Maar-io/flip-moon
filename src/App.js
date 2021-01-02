@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import Web3 from 'web3'
 import abiJson from './abi';
-import { Button, Container, Row, Card, Col, Form, Badge } from 'react-bootstrap';
+import { Button, Container, Row, Card, Col, Form, Badge, Jumbotron } from 'react-bootstrap';
 import Balance from './components/Balance'
 import ConnectedAccount from './components/ConnectedAccount'
+import styled from 'styled-components';
 
 const MOONBASE_ALPHA = 'https://rpc.testnet.moonbeam.network'
 const OWNER = "0x8F10433FC11b70a15128aAF0b30B906627808296"
@@ -32,6 +33,15 @@ function App() {
   const [connected, setConnected] = useState(false)
   const [statistics, setStatistics] = useState({})
   const [betAmount, setBetAmount] = useState(radios[0].value)
+  const Styles = styled.div`
+  .jumbo {
+    background: 
+    linear-gradient(
+      rgb(29, 37, 82), 
+      rgb(83, 203, 200)
+    );
+  }
+`;
 
   async function loadWeb3() {
     if (window.ethereum) {
@@ -168,12 +178,19 @@ function App() {
 
   if (!connected) {
     return (
-      <Container fluid='true'>
-        <Row>
-          <Button onClick={loadWeb3} >Connect to Moonbase Alpha</Button>
-        </Row>
-      </Container>
-
+      <Styles>
+        <Jumbotron fluid className="jumbo">
+          <Container>
+            <h1>Coin Flip on Moonbase</h1>
+         <p>This is a simple gambling dApp deployed on the Moonbase Alpha testnet.
+         In order to connect to this app you will need Metamask or similar wallet.</p>
+            <p>
+              <p></p>
+              <Button onClick={loadWeb3} >Connect to Moonbase Alpha</Button>
+            </p>
+          </Container>
+        </Jumbotron>
+      </Styles>
     )
   }
   else {
@@ -181,7 +198,7 @@ function App() {
       <Container fluid='md'>
         <Row >
           <Col>
-          logo
+            logo
           </Col>
           <Col>
             <ConnectedAccount account={account} />
@@ -202,7 +219,7 @@ function App() {
                       type='radio'
                       id={radio.name}
                       value={radio.value}
-                      checked={betAmount===radio.value}
+                      checked={betAmount === radio.value}
                       onChange={e => setBetAmount(e.currentTarget.value)} />
                   ))}
                 </div>
@@ -213,8 +230,8 @@ function App() {
             <Card.Body>
               <Card.Title> 2. Press button to place your bet </Card.Title>
               <Card.Text>
-                    <Button onClick={() => flipCoin(true)}>Head</Button>{' '}
-                    <Button onClick={() => flipCoin(false)}>Tail</Button>
+                <Button onClick={() => flipCoin(true)}>Head</Button>{' '}
+                <Button onClick={() => flipCoin(false)}>Tail</Button>
               </Card.Text>
               <Card.Footer>
                 <h5>{betResult}</h5>
