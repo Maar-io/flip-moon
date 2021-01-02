@@ -198,7 +198,7 @@ function App() {
       <Container fluid='md'>
         <Row >
           <Col>
-            logo
+            {}
           </Col>
           <Col>
             <ConnectedAccount account={account} />
@@ -250,7 +250,7 @@ function App() {
         <Row>
           <Badge>
             Contract address on
-            <a href="https://docs.moonbeam.network/networks/testnet/">Moonbase Alpha:</a> {abiJson.address}
+            <a href="https://docs.moonbeam.network/networks/testnet/"> Moonbase Alpha:</a> {abiJson.address}
           </Badge>
         </Row>
         {(account === OWNER) ? (
