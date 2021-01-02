@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/flip-moon/static/css/main.6dea0f05.chunk.css",
-    "main.js": "/flip-moon/static/js/main.e68bdb3b.chunk.js",
-    "main.js.map": "/flip-moon/static/js/main.e68bdb3b.chunk.js.map",
+    "main.js": "/flip-moon/static/js/main.ce16b504.chunk.js",
+    "main.js.map": "/flip-moon/static/js/main.ce16b504.chunk.js.map",
     "runtime-main.js": "/flip-moon/static/js/runtime-main.c7fa62df.js",
     "runtime-main.js.map": "/flip-moon/static/js/runtime-main.c7fa62df.js.map",
     "static/css/2.833e612b.chunk.css": "/flip-moon/static/css/2.833e612b.chunk.css",
@@ -18,6 +18,6 @@
     "static/css/2.833e612b.chunk.css",
     "static/js/2.b6dd475e.chunk.js",
     "static/css/main.6dea0f05.chunk.css",
-    "static/js/main.e68bdb3b.chunk.js"
+    "static/js/main.ce16b504.chunk.js"
   ]
 }
