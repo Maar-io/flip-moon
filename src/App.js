@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import Web3 from 'web3'
 import abiJson from './abi';
-import { Button, Container, Row, Card } from 'react-bootstrap';
+import { Button, Container, Row, Card, ButtonToolbar, ButtonGroup, Form, Badge } from 'react-bootstrap';
 import Balance from './components/Balance'
 import ConnectedAccount from './components/ConnectedAccount'
 
@@ -10,6 +10,8 @@ const OWNER = "0x8F10433FC11b70a15128aAF0b30B906627808296"
 const RESULT_UNKNOWN = 'result ❔'
 const RESULT_WON = 'You won 👍'
 const RESULT_LOST = 'You lost 👎'
+const DEPOSIT_AMOUNT = '1000' //milli
+
 var contractInstance;
 
 const web3 = new Web3(Web3.givenProvider || "http://localhost:9933")
@@ -17,12 +19,20 @@ console.log("web3 version = " + web3.version);
 
 
 function App() {
+  const radios = [
+    { name: "0.01 DEV", value: "10" },
+    { name: "0.02 DEV", value: "20" },
+    { name: "0.05 DEV", value: "50" },
+    { name: "0.1 DEV", value: "100" },
+    { name: "0.5 DEV", value: "500" }
+  ];
   const [account, setAccount] = useState('')
   const [accountBalance, setAccountBalance] = useState(0)
   const [contractBalance, setContractBalance] = useState(0)
   const [betResult, setBetResult] = useState(RESULT_UNKNOWN)
   const [connected, setConnected] = useState(false)
   const [statistics, setStatistics] = useState({})
+  const [betAmount, setBetAmount] = useState(radios[0].value)
 
   async function loadWeb3() {
     if (window.ethereum) {
@@ -63,7 +73,6 @@ function App() {
     getContractBalance()
     getPlayerData()
     setBetResult(RESULT_UNKNOWN)
-
   }
 
   async function getPlayerData() {
@@ -87,7 +96,7 @@ function App() {
   async function flipCoin(betHead) {
     console.log("flipCoin", account, betHead);
     setBetResult('waiting blockchain result... 🐌')
-    var weiValue = web3.utils.toWei('10', 'milli');
+    var weiValue = web3.utils.toWei(betAmount, 'milli');
     contractInstance.methods.flipCoin(betHead).send({ from: account, gas: 3000000, value: weiValue })
       .then((res) => {
         console.log("flipCoin", res);
@@ -96,7 +105,7 @@ function App() {
 
   async function deposit() {
     console.log("deposit");
-    var weiValue = web3.utils.toWei('100', 'milli');
+    var weiValue = web3.utils.toWei(DEPOSIT_AMOUNT, 'milli');
     contractInstance.methods.depositFunds().send({ OWNER, gas: 3000000, value: weiValue })
       .on('receipt', function (rec) {
 
@@ -158,6 +167,7 @@ function App() {
     loadBlockchainData()
   }, [connected, accountBalance])
 
+  console.log(betAmount)
   if (!connected) {
     return (
       <Container fluid='true'>
@@ -181,15 +191,32 @@ function App() {
           <Card border="info" style={{ width: '18rem', margin: 5 }}>
             <Card.Body>
               <Card.Title> 1. Pick your bet amount </Card.Title>
-              <Card.Text>  bla </Card.Text>
+              <Form>
+                <div className="mb-3">
+                  {radios.map((radio, index) => (
+                    <Form.Check name='radios'
+                      label={radio.name}
+                      type='radio'
+                      id={radio.name}
+                      value={radio.value}
+                      onChange={e => setBetAmount(e.currentTarget.value)} />
+                  ))}
+                </div>
+              </Form>
             </Card.Body>
           </Card>
           <Card border="info" style={{ width: '18rem', margin: 5 }}>
             <Card.Body>
               <Card.Title> 2. Press button to place your bet </Card.Title>
               <Card.Text>
-                <Button onClick={() => flipCoin(true)}>Head</Button>
-                <Button onClick={() => flipCoin(false)}>Tail</Button>
+                <ButtonToolbar aria-label="Toolbar with button groups">
+                  <ButtonGroup className="mr-2" aria-label="First group">
+                    <Button onClick={() => flipCoin(true)}>Head</Button>
+                  </ButtonGroup>
+                  <ButtonGroup className="mr-2" aria-label="Second group">
+                    <Button onClick={() => flipCoin(false)}>Tail</Button>
+                  </ButtonGroup>
+                </ButtonToolbar>
               </Card.Text>
               <Card.Footer>
                 <h5>{betResult}</h5>
@@ -205,21 +232,19 @@ function App() {
             </Card.Body>
           </Card>
         </Row>
-
-
-        {/* <Button onClick={getContractBalance} >ContractBalance</Button> */}
-        {/* <Button onClick={getPlayerData} >getPlayerData</Button> */}
-        {(account == OWNER) ? (
+        <Row>
+          <Badge>
+            Contract address on
+            <a href="https://docs.moonbeam.network/networks/testnet/">Moonbase Alpha:</a> {abiJson.address}
+          </Badge>
+        </Row>
+        {(account === OWNER) ? (
           <Row>
             <Button onClick={deposit} >Deposit</Button>
             <Button onClick={withdrawAll} >withdrawAll</Button>
           </Row>
         ) : null}
-
-
-
       </Container>
-
     )
   }
 }
