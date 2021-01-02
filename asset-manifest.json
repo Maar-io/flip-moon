@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.css": "/flip-moon/static/css/main.6dea0f05.chunk.css",
+    "main.js": "/flip-moon/static/js/main.e68bdb3b.chunk.js",
+    "main.js.map": "/flip-moon/static/js/main.e68bdb3b.chunk.js.map",
+    "runtime-main.js": "/flip-moon/static/js/runtime-main.c7fa62df.js",
+    "runtime-main.js.map": "/flip-moon/static/js/runtime-main.c7fa62df.js.map",
+    "static/css/2.833e612b.chunk.css": "/flip-moon/static/css/2.833e612b.chunk.css",
+    "static/js/2.b6dd475e.chunk.js": "/flip-moon/static/js/2.b6dd475e.chunk.js",
+    "static/js/2.b6dd475e.chunk.js.map": "/flip-moon/static/js/2.b6dd475e.chunk.js.map",
+    "index.html": "/flip-moon/index.html",
+    "static/css/2.833e612b.chunk.css.map": "/flip-moon/static/css/2.833e612b.chunk.css.map",
+    "static/css/main.6dea0f05.chunk.css.map": "/flip-moon/static/css/main.6dea0f05.chunk.css.map",
+    "static/js/2.b6dd475e.chunk.js.LICENSE.txt": "/flip-moon/static/js/2.b6dd475e.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.c7fa62df.js",
+    "static/css/2.833e612b.chunk.css",
+    "static/js/2.b6dd475e.chunk.js",
+    "static/css/main.6dea0f05.chunk.css",
+    "static/js/main.e68bdb3b.chunk.js"
+  ]
+}
